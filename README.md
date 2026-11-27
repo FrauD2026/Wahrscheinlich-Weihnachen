@@ -1,4 +1,4 @@
-# Weihnachtliche Wiederholung: Wahrscheinlichkeitsrechnung
+# Wahrscheinlich Weihnachten: Weihnachtliche Wiederholung der Wahrscheinlichkeitsrechnung
 
 Interaktive Wiederholung für Mathematik Klasse 12 (Weihnachtsferien 2026/27).
 
