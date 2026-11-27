@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weihnachtliche Wiederholung: Wahrscheinlichkeitsrechnung</title>
+<meta name="description" content="Interaktive Wiederholung der Wahrscheinlichkeitsrechnung für die Weihnachtsferien, Mathematik Klasse 12">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] }, svg: { fontCache: 'global' }, startup: { typeset: false } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
+<style>
+/* Layout: festlicher Kopf mit Lösungswort, drei Etappen als Reiter, Merkwissen in Kästen, Erkundungen und Aufgabenkarten */
+:root {
+  --bg: #f4f1ea; --surface: #ffffff; --fg: #1f2a24; --muted: #5d6a62; --line: #d8d2c4;
+  --accent: #1e5b3d; --accent-soft: #e4efe8; --red: #a8322d; --gold: #c8962b; --gold-soft: #fbf3e0;
+  --merk: #fbf3e0; --merk-line: #c8962b;
+  --ok: #1d7a46; --ok-soft: #e4f4ea; --bad: #b3361f; --bad-soft: #fbe9e5;
+  --plot-bg: #ffffff; --grid: #ebe6da; --axis: #3b4540; --bar: #a9c4b3; --bar-hi: #a8322d;
+  --font-body: "Source Sans 3", "Segoe UI", Arial, sans-serif; --font-display: "Source Serif 4", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #111613; --surface: #1a211d; --fg: #e6ece8; --muted: #9fada5; --line: #333e37;
+  --accent: #7cc49b; --accent-soft: #1c2c23; --red: #ef8a80; --gold: #e3b453; --gold-soft: #2c2616;
+  --merk: #2c2616; --merk-line: #c8962b;
+  --ok: #5cc28a; --ok-soft: #173126; --bad: #ef8a75; --bad-soft: #3a1f1a;
+  --plot-bg: #151b17; --grid: #26302a; --axis: #b9c6be; --bar: #3e5c49; --bar-hi: #ef7a6e; color-scheme: dark } }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 17px; line-height: 1.55; }
+.wrap { max-width: 840px; margin: 0 auto; padding-inline: 16px; padding-block: 0 60px; display: grid; gap: 22px; position: relative; z-index: 1; }
+.hero { background: linear-gradient(160deg, #173f2c, #1e5b3d 60%, #24684a); color: #f7f3e8; border-radius: 0 0 10px 10px; padding: 26px 22px 20px; display: grid; gap: 10px; position: relative; overflow: hidden; }
+.hero .eyebrow { color: #e7cf94; }
+.hero h1 { color: #fffaf0; }
+.hero p { color: #e3eadf; }
+.garland { display: flex; gap: 6px; flex-wrap: wrap; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+h1 { font-family: var(--font-display); font-size: clamp(26px, 5vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 24px; margin: 8px 0 0; color: var(--accent); text-wrap: balance; }
+h3 { font-size: 18px; margin: 0; }
+p { margin: 0; }
+.word { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.word span { width: 34px; height: 42px; border-radius: 5px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 600; font-size: 22px; background: rgba(255,255,255,.1); border: 1px dashed rgba(255,255,255,.45); color: #f7f3e8; }
+.word span.on { background: #c8962b; border: 1px solid #e7cf94; color: #1f2a24; }
+.word-note { font-size: 14px; color: #d6e2d8; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; background: var(--bg); padding-block: 8px; z-index: 3; }
+.tab { border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 8px 14px; border-radius: 999px; font: inherit; font-size: 15px; cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.tab:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.progress { font-size: 14px; color: var(--muted); align-self: center; margin-left: auto; font-variant-numeric: tabular-nums; }
+section.day { display: grid; gap: 18px; }
+.plan { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; }
+.plan ol, .plan ul { margin: 0; padding-left: 22px; display: grid; gap: 3px; }
+.merk { background: var(--merk); border-left: 4px solid var(--merk-line); padding: 14px 16px; border-radius: 0 6px 6px 0; display: grid; gap: 8px; overflow-x: auto; }
+.merk ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.explore { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+canvas { width: 100%; height: auto; display: block; border-radius: 4px; background: var(--plot-bg); }
+.slider { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 4.5em; gap: 10px; align-items: center; }
+.slider input { width: 100%; accent-color: var(--accent); }
+.readout { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 15px; white-space: pre-line; }
+table.vft { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 16px; }
+table.vft th, table.vft td { border: 1px solid var(--line); padding: 6px 12px; text-align: center; }
+table.vft th { background: var(--accent-soft); font-weight: 600; }
+.trees { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.trees svg { width: 100%; max-width: 400px; height: auto; display: block; margin: 0 auto; }
+.trees svg text { fill: var(--fg); font-family: var(--font-body); font-size: 14px; }
+.trees svg line { stroke: var(--axis); stroke-width: 1.4; }
+.trees .cap { font-size: 14px; color: var(--muted); text-align: center; }
+.task { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.task.done { border-color: var(--ok); }
+.task-head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.level { font-size: 13px; font-weight: 700; color: var(--gold); margin-right: 6px; letter-spacing: .05em; }
+.badge { font-size: 13px; color: var(--muted); }
+.task.done .badge { color: var(--ok); font-weight: 600; }
+.fields { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.field { display: inline-flex; align-items: center; gap: 6px; }
+.field input { width: 7em; padding: 7px 9px; font: inherit; font-size: 16px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); font-variant-numeric: tabular-nums; }
+.field input.right { border-color: var(--ok); background: var(--ok-soft); }
+.field input.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.choices { display: grid; gap: 6px; }
+.choices label { display: flex; gap: 8px; align-items: flex-start; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+button.b { font: inherit; font-size: 15px; padding: 7px 14px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.feedback { font-size: 15px; padding: 8px 10px; border-radius: 4px; }
+.feedback.ok { background: var(--ok-soft); color: var(--ok); }
+.feedback.no { background: var(--bad-soft); color: var(--bad); }
+.hint, .solution { background: var(--accent-soft); padding: 10px 12px; border-radius: 4px; font-size: 15.5px; display: grid; gap: 6px; overflow-x: auto; }
+.note { font-size: 14px; color: var(--muted); }
+.final { background: var(--gold-soft); border: 1px dashed var(--gold); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; }
+.nw { white-space: nowrap; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px; color: #e3eadf; }
+.legend b { color: #e7cf94; }
+/* Schneeflocken */
+.snow { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.snow i { position: absolute; top: -20px; color: #c9d6cf; opacity: .55; font-style: normal; animation: fall linear infinite; }
+@keyframes fall { to { transform: translateY(110vh) rotate(180deg); } }
+@media (prefers-color-scheme: dark) { .snow i { color: #6d8577; } }
+@media (prefers-reduced-motion: reduce) { .snow { display: none; } * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="snow" id="snow" aria-hidden="true"></div>
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">Mathematik Klasse 12 · Wiederholung in den Weihnachtsferien</span>
+    <h1>Zimtsterne, Lichterketten und Losbuden: Wahrscheinlichkeitsrechnung</h1>
+    <p>Diese Wiederholung ist für alle. Arbeite in den Ferien in deinem Tempo, gern an mehreren Tagen. Rechne alles im Hefter mit und schreib die Merkkästen ab. Gib deine Ergebnisse ein und lass sie prüfen. Bei Schwierigkeiten helfen dir die Tipps. Nichts wird abgegeben oder bewertet.</p>
+    <div class="legend"><span><b>★</b> Basis, für alle</span><span><b>★★</b> anspruchsvoller, Abiturniveau</span></div>
+    <div>
+      <p class="word-note">Jede richtig gelöste Aufgabe schenkt dir einen Buchstaben des Lösungsworts:</p>
+      <div class="word" id="word" aria-label="Lösungswort"></div>
+    </div>
+  </header>
+
+  <p class="note">Eingaben: Wahrscheinlichkeiten als Dezimalzahl (z. B. 0,4167) oder als Bruch (z. B. 5/12), nicht in Prozent. Vier Nachkommastellen genügen. Der TI-84 Plus ist überall erlaubt. Dein Fortschritt wird nur in diesem Browser gespeichert.</p>
+
+  <nav class="tabs" role="tablist" aria-label="Etappen">
+    <button class="tab" role="tab" id="tab-d1" aria-controls="day1" aria-selected="true">1 · Baumdiagramme</button>
+    <button class="tab" role="tab" id="tab-d2" aria-controls="day2" aria-selected="false">2 · Vierfeldertafel</button>
+    <button class="tab" role="tab" id="tab-d3" aria-controls="day3" aria-selected="false">3 · Bernoulli-Ketten</button>
+    <span class="progress" id="progress"></span>
+  </nav>
+
+  <!-- ===================== ETAPPE 1 ===================== -->
+  <section class="day" id="day1" role="tabpanel" aria-labelledby="tab-d1">
+    <div class="plan">
+      <h3>Etappe 1: Plätzchendose und Losbude (ca. 60 Minuten)</h3>
+      <ol>
+        <li>Lies den Merkkasten und schreib ihn in deinen Hefter.</li>
+        <li>Zeichne zu jeder Aufgabe zuerst ein Baumdiagramm.</li>
+        <li>Bearbeite die Aufgaben 1 bis 5.</li>
+      </ol>
+    </div>
+
+    <div class="merk">
+      <h3>Merkkasten: Grundbegriffe und Pfadregeln</h3>
+      <ul>
+        <li><strong>Laplace-Experiment:</strong> Sind alle Ergebnisse gleich wahrscheinlich, gilt \( P(E)=\frac{\text{Anzahl der günstigen Ergebnisse}}{\text{Anzahl aller Ergebnisse}} \).</li>
+        <li><strong>1. Pfadregel (Produktregel):</strong> Entlang eines Pfades werden die Wahrscheinlichkeiten multipliziert.</li>
+        <li><strong>2. Pfadregel (Summenregel):</strong> Die Wahrscheinlichkeiten aller Pfade, die zum Ereignis gehören, werden addiert.</li>
+        <li><strong>Gegenereignis:</strong> \( P(\overline{E})=1-P(E) \), besonders praktisch bei „mindestens einmal“.</li>
+        <li><strong>Ohne Zurücklegen</strong> ändern sich die Wahrscheinlichkeiten auf der zweiten Stufe, <strong>mit Zurücklegen</strong> bleiben sie gleich.</li>
+        <li><strong>Erwartungswert:</strong> \( E(X)=x_{1}\cdot P(X=x_{1})+\dots+x_{n}\cdot P(X=x_{n}) \). Ein Spiel ist <strong>fair</strong>, wenn der Erwartungswert des Gewinns 0 ist.</li>
+      </ul>
+    </div>
+
+    <div class="trees">
+      <div>
+        <svg viewBox="0 0 330 190" role="img" aria-label="Baumdiagramm: zwei Plätzchen ohne Zurücklegen aus 5 Zimtsternen und 5 anderen Plätzchen">
+          <line x1="20" y1="95" x2="120" y2="45"/><line x1="20" y1="95" x2="120" y2="145"/>
+          <line x1="150" y1="45" x2="250" y2="20"/><line x1="150" y1="45" x2="250" y2="70"/>
+          <line x1="150" y1="145" x2="250" y2="120"/><line x1="150" y1="145" x2="250" y2="170"/>
+          <text x="124" y="50">Z</text><text x="124" y="150">Z̄</text>
+          <text x="256" y="25">Z</text><text x="256" y="75">Z̄</text><text x="256" y="125">Z</text><text x="256" y="175">Z̄</text>
+          <text x="52" y="60">5/10</text><text x="52" y="140">5/10</text>
+          <text x="180" y="24">4/9</text><text x="180" y="72">5/9</text><text x="180" y="124">5/9</text><text x="180" y="172">4/9</text>
+        </svg>
+        <p class="cap">Zwei Plätzchen ohne Zurücklegen: Z = Zimtstern, Z̄ = kein Zimtstern</p>
+      </div>
+    </div>
+
+    <h2>Aufgaben</h2>
+    <div id="tasks1" style="display:grid; gap:16px"></div>
+  </section>
+
+  <!-- ===================== ETAPPE 2 ===================== -->
+  <section class="day" id="day2" role="tabpanel" aria-labelledby="tab-d2" hidden>
+    <div class="plan">
+      <h3>Etappe 2: Weihnachtsmarkt und Christbaumkugeln (ca. 60 Minuten)</h3>
+      <ol>
+        <li>Lies den Merkkasten und schreib ihn in deinen Hefter.</li>
+        <li>Erkunde unten, wie Baumdiagramm, umgekehrtes Baumdiagramm und Vierfeldertafel zusammenhängen.</li>
+        <li>Bearbeite die Aufgaben 6 bis 9.</li>
+      </ol>
+    </div>
+
+    <div class="merk">
+      <h3>Merkkasten: Bedingte Wahrscheinlichkeit</h3>
+      <ul>
+        <li>\( P_{A}(B) \) ist die Wahrscheinlichkeit von \(B\) <strong>unter der Bedingung</strong>, dass \(A\) eingetreten ist: \[ P_{A}(B)=\frac{P(A\cap B)}{P(A)} \]</li>
+        <li>Im Baumdiagramm stehen die bedingten Wahrscheinlichkeiten auf der <strong>zweiten Stufe</strong>.</li>
+        <li><strong>Vierfeldertafel:</strong> Innen stehen die Schnittwahrscheinlichkeiten wie \( P(A\cap B) \), am Rand die Summen wie \( P(A) \) und \( P(B) \), unten rechts steht 1.</li>
+        <li><strong>Umgekehrter Baum:</strong> Erst \( P(B) \) mit der 2. Pfadregel berechnen, dann \( P_{B}(A)=\frac{P(A\cap B)}{P(B)} \).</li>
+        <li><strong>Unabhängigkeit:</strong> \(A\) und \(B\) sind stochastisch unabhängig, wenn \( P(A\cap B)=P(A)\cdot P(B) \), also \( P_{A}(B)=P(B) \) gilt.</li>
+        <li>„Anteil der … <strong>unter den</strong> …“ deutet auf eine bedingte Wahrscheinlichkeit hin, „… <strong>und</strong> …“ auf eine Schnittwahrscheinlichkeit.</li>
+      </ul>
+    </div>
+
+    <h2>Erkunden: Baum, umgekehrter Baum und Vierfeldertafel</h2>
+    <div class="explore">
+      <p>Voreingestellt ist Aufgabe 6: \(K\) = trinkt Kinderpunsch, \(M\) = kauft gebrannte Mandeln. Verändere die Werte und beobachte die Vierfeldertafel und den umgekehrten Baum.</p>
+      <div class="slider"><label for="pa">\( P(K) \)</label><input type="range" id="pa" min="0.05" max="0.95" step="0.01" value="0.7"><span class="readout" id="pav"></span></div>
+      <div class="slider"><label for="pab">\( P_{K}(M) \)</label><input type="range" id="pab" min="0" max="1" step="0.01" value="0.4"><span class="readout" id="pabv"></span></div>
+      <div class="slider"><label for="pnab">\( P_{\overline{K}}(M) \)</label><input type="range" id="pnab" min="0" max="1" step="0.01" value="0.2"><span class="readout" id="pnabv"></span></div>
+      <div class="trees" id="treeArea"></div>
+      <div style="overflow-x:auto"><table class="vft" id="vft" aria-label="Vierfeldertafel"></table></div>
+      <p class="readout" id="indep"></p>
+      <p class="note">Probiere: Stelle \( P_{K}(M) \) und \( P_{\overline{K}}(M) \) gleich ein. Was fällt dir dann an \( P_{M}(K) \) auf?</p>
+    </div>
+
+    <h2>Aufgaben</h2>
+    <div id="tasks2" style="display:grid; gap:16px"></div>
+  </section>
+
+  <!-- ===================== ETAPPE 3 ===================== -->
+  <section class="day" id="day3" role="tabpanel" aria-labelledby="tab-d3" hidden>
+    <div class="plan">
+      <h3>Etappe 3: Lichterketten und Lebkuchen (ca. 75 Minuten)</h3>
+      <ol>
+        <li>Lies den Merkkasten und schreib ihn in deinen Hefter, besonders die Übersetzungstabelle.</li>
+        <li>Erkunde unten die Binomialverteilung und vergleiche mit deinem TI-84 Plus.</li>
+        <li>Bearbeite die Aufgaben 10 bis 14.</li>
+      </ol>
+    </div>
+
+    <div class="merk">
+      <h3>Merkkasten: Bernoulli-Ketten und Binomialverteilung</h3>
+      <ul>
+        <li>Ein Versuch mit nur zwei Ergebnissen (Treffer mit Wahrscheinlichkeit \(p\), Niete mit \(1-p\)) heißt <strong>Bernoulli-Experiment</strong>. Wird er \(n\)-mal <strong>unabhängig</strong> mit <strong>gleichem</strong> \(p\) wiederholt, entsteht eine <strong>Bernoulli-Kette</strong> der Länge \(n\).</li>
+        <li>Die Trefferzahl \(X\) ist <strong>binomialverteilt</strong>: \[ P(X=k)=\binom{n}{k}\cdot p^{k}\cdot(1-p)^{n-k} \]</li>
+        <li>Erwartungswert \( \mu=n\cdot p \), Standardabweichung \( \sigma=\sqrt{n\cdot p\cdot(1-p)} \).</li>
+        <li>TI-84 Plus (<span class="nw">2nd → VARS</span>): <strong>binompdf(\(n\), \(p\), \(k\))</strong> liefert \( P(X=k) \), <strong>binomcdf(\(n\), \(p\), \(k\))</strong> liefert \( P(X\le k) \).</li>
+      </ul>
+      <div style="overflow-x:auto">
+      <table class="vft" aria-label="Übersetzungstabelle">
+        <tr><th>Formulierung</th><th>Wahrscheinlichkeit</th><th>mit binomcdf</th></tr>
+        <tr><td>höchstens \(k\)</td><td>\( P(X\le k) \)</td><td>binomcdf(\(n\), \(p\), \(k\))</td></tr>
+        <tr><td>weniger als \(k\)</td><td>\( P(X\le k-1) \)</td><td>binomcdf(\(n\), \(p\), \(k-1\))</td></tr>
+        <tr><td>mindestens \(k\)</td><td>\( 1-P(X\le k-1) \)</td><td>1 − binomcdf(\(n\), \(p\), \(k-1\))</td></tr>
+        <tr><td>mehr als \(k\)</td><td>\( 1-P(X\le k) \)</td><td>1 − binomcdf(\(n\), \(p\), \(k\))</td></tr>
+        <tr><td>von \(a\) bis \(b\)</td><td>\( P(a\le X\le b) \)</td><td>binomcdf(\(n\), \(p\), \(b\)) − binomcdf(\(n\), \(p\), \(a-1\))</td></tr>
+      </table>
+      </div>
+    </div>
+
+    <h2>Erkunden: Histogramm der Binomialverteilung</h2>
+    <div class="explore">
+      <p>Voreingestellt ist Aufgabe 13 (Glücksrad). Verändere \(n\) und \(p\) und wähle mit \(a\) und \(b\) einen Bereich. Die roten Säulen ergeben zusammen \( P(a\le X\le b) \).</p>
+      <canvas id="cvb" width="760" height="380" aria-label="Histogramm der Binomialverteilung mit markiertem Bereich"></canvas>
+      <div class="slider"><label for="bn">\(n\)</label><input type="range" id="bn" min="1" max="60" step="1" value="15"><span class="readout" id="bnv"></span></div>
+      <div class="slider"><label for="bp">\(p\)</label><input type="range" id="bp" min="0.01" max="0.99" step="0.01" value="0.3"><span class="readout" id="bpv"></span></div>
+      <div class="slider"><label for="ba">\(a\)</label><input type="range" id="ba" min="0" max="15" step="1" value="4"><span class="readout" id="bav"></span></div>
+      <div class="slider"><label for="bb">\(b\)</label><input type="range" id="bb" min="0" max="15" step="1" value="7"><span class="readout" id="bbv"></span></div>
+      <p class="readout" id="binfo"></p>
+      <p class="note">Beobachte: Wo liegt die höchste Säule im Vergleich zu \( \mu=n\cdot p \)? Wie verändert sich das Histogramm, wenn du \(n\) vergrößerst?</p>
+    </div>
+
+    <h2>Aufgaben</h2>
+    <div id="tasks3" style="display:grid; gap:16px"></div>
+
+    <div class="final" id="final">
+      <h3>Frohe Weihnachten!</h3>
+      <p id="finalText">Löse alle 14 Aufgaben, dann ist das Lösungswort vollständig. Schreib dir auf, bei welchen Aufgaben du Tipps oder die Lösung gebraucht hast, und rechne genau diese nach ein paar Tagen noch einmal ohne Hilfe.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const R = String.raw;
+// ---------- Hilfsfunktionen ----------
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function parseNum(s) {
+  if (s == null) return NaN;
+  s = String(s).trim().replace(/\s+/g, '').replace(/,/g, '.').replace(/−/g, '-').replace(/€/g, '');
+  if (s === '') return NaN;
+  const m = s.match(/^([+-]?\d*\.?\d+)\/([+-]?\d*\.?\d+)$/);
+  if (m) return parseFloat(m[1]) / parseFloat(m[2]);
+  if (!/^[+-]?\d*\.?\d+$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+const fmt = (x, d = 4) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: d});
+function typeset(el) { if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise(el ? [el] : undefined).catch(() => {}); }
+
+// ---------- Schnee ----------
+(function () {
+  const box = document.getElementById('snow');
+  for (let i = 0; i < 22; i++) {
+    const f = document.createElement('i'); f.textContent = '❄';
+    f.style.left = (Math.random() * 100) + 'vw'; f.style.fontSize = (10 + Math.random() * 14) + 'px';
+    f.style.animationDuration = (12 + Math.random() * 16) + 's'; f.style.animationDelay = (-Math.random() * 25) + 's';
+    box.appendChild(f);
+  }
+})();
+
+// ---------- Erkundung 2: Bäume und Vierfeldertafel ----------
+function treeSVG(r1, r2, l1, l2, s1, s2, s3, cap) {
+  return `<div><svg viewBox="0 0 320 190" role="img" aria-label="${cap}">
+    <line x1="14" y1="95" x2="118" y2="45"/><line x1="14" y1="95" x2="118" y2="145"/>
+    <line x1="148" y1="45" x2="250" y2="20"/><line x1="148" y1="45" x2="250" y2="70"/>
+    <line x1="148" y1="145" x2="250" y2="120"/><line x1="148" y1="145" x2="250" y2="170"/>
+    <text x="124" y="50">${r1}</text><text x="124" y="150">${r2}</text>
+    <text x="256" y="25">${l1}</text><text x="256" y="75">${l2}</text><text x="256" y="125">${l1}</text><text x="256" y="175">${l2}</text>
+    <text x="40" y="60">${fmt(s1[0])}</text><text x="40" y="140">${fmt(s1[1])}</text>
+    <text x="176" y="24">${fmt(s2[0])}</text><text x="176" y="72">${fmt(s2[1])}</text><text x="176" y="124">${fmt(s3[0])}</text><text x="176" y="172">${fmt(s3[1])}</text>
+  </svg><p class="cap">${cap}</p></div>`;
+}
+function drawVFT() {
+  const pa = +document.getElementById('pa').value, pab = +document.getElementById('pab').value, pnab = +document.getElementById('pnab').value;
+  document.getElementById('pav').textContent = fmt(pa, 2); document.getElementById('pabv').textContent = fmt(pab, 2); document.getElementById('pnabv').textContent = fmt(pnab, 2);
+  const AB = pa * pab, AnB = pa * (1 - pab), nAB = (1 - pa) * pnab, nAnB = (1 - pa) * (1 - pnab), pb = AB + nAB;
+  const q = (x, y) => (y > 1e-12 ? x / y : NaN);
+  document.getElementById('treeArea').innerHTML =
+    treeSVG('K', 'K̄', 'M', 'M̄', [pa, 1 - pa], [pab, 1 - pab], [pnab, 1 - pnab], 'Baumdiagramm: zuerst K, dann M') +
+    treeSVG('M', 'M̄', 'K', 'K̄', [pb, 1 - pb], [q(AB, pb), q(nAB, pb)], [q(AnB, 1 - pb), q(nAnB, 1 - pb)], 'umgekehrtes Baumdiagramm: zuerst M, dann K');
+  document.getElementById('vft').innerHTML =
+    `<tr><th></th><th>M</th><th>M̄</th><th>Summe</th></tr>
+     <tr><th>K</th><td>${fmt(AB)}</td><td>${fmt(AnB)}</td><td>${fmt(pa)}</td></tr>
+     <tr><th>K̄</th><td>${fmt(nAB)}</td><td>${fmt(nAnB)}</td><td>${fmt(1 - pa)}</td></tr>
+     <tr><th>Summe</th><td>${fmt(pb)}</td><td>${fmt(1 - pb)}</td><td>1</td></tr>`;
+  const ind = Math.abs(AB - pa * pb) < 5e-5;
+  document.getElementById('indep').textContent = `P(M) = ${fmt(pb)},  P_M(K) = ${pb > 0 ? fmt(AB / pb) : '–'}\nP(K) · P(M) = ${fmt(pa * pb)} und P(K ∩ M) = ${fmt(AB)}: K und M sind ${ind ? 'stochastisch unabhängig' : 'stochastisch abhängig'}.`;
+}
+['pa', 'pab', 'pnab'].forEach((id) => document.getElementById(id).addEventListener('input', drawVFT));
+
+// ---------- Erkundung 3: Binomialverteilung ----------
+function binom(n, k) { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return r; }
+const pdf = (n, p, k) => binom(n, k) * p ** k * (1 - p) ** (n - k);
+function drawBin() {
+  const n = +document.getElementById('bn').value, p = +document.getElementById('bp').value;
+  const aEl = document.getElementById('ba'), bEl = document.getElementById('bb');
+  aEl.max = n; bEl.max = n; if (+aEl.value > n) aEl.value = n; if (+bEl.value > n) bEl.value = n;
+  let a = +aEl.value, b = +bEl.value; if (a > b) { [a, b] = [b, a]; }
+  document.getElementById('bnv').textContent = n; document.getElementById('bpv').textContent = fmt(p, 2);
+  document.getElementById('bav').textContent = aEl.value; document.getElementById('bbv').textContent = bEl.value;
+  const cv = document.getElementById('cvb'), ctx = cv.getContext('2d'), W = cv.width, H = cv.height, padL = 56, padB = 42, padT = 14, padR = 14;
+  const vals = Array.from({length: n + 1}, (_, k) => pdf(n, p, k)), ymax = Math.max(...vals) * 1.12;
+  ctx.fillStyle = css('--plot-bg'); ctx.fillRect(0, 0, W, H);
+  const X = (k) => padL + (k + 0.5) / (n + 1) * (W - padL - padR), bw = (W - padL - padR) / (n + 1);
+  const Y = (y) => H - padB - y / ymax * (H - padB - padT);
+  const step = ymax > 0.4 ? 0.1 : ymax > 0.2 ? 0.05 : ymax > 0.08 ? 0.02 : 0.01;
+  ctx.strokeStyle = css('--grid'); ctx.lineWidth = 1; ctx.fillStyle = css('--axis'); ctx.font = '17px Source Sans 3, Arial'; ctx.textAlign = 'right';
+  for (let y = step; y < ymax; y += step) { ctx.beginPath(); ctx.moveTo(padL, Y(y)); ctx.lineTo(W - padR, Y(y)); ctx.stroke(); ctx.fillText(fmt(y, 2), padL - 6, Y(y) + 5); }
+  let sum = 0;
+  vals.forEach((v, k) => { const hi = k >= a && k <= b; if (hi) sum += v; ctx.fillStyle = hi ? css('--bar-hi') : css('--bar'); ctx.fillRect(X(k) - bw * 0.42, Y(v), bw * 0.84, Y(0) - Y(v)); });
+  ctx.strokeStyle = css('--axis'); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(W - padR, Y(0)); ctx.stroke();
+  ctx.fillStyle = css('--axis'); ctx.textAlign = 'center';
+  const lab = n > 40 ? 5 : n > 20 ? 2 : 1;
+  for (let k = 0; k <= n; k += lab) ctx.fillText(k, X(k), Y(0) + 20);
+  ctx.textAlign = 'left'; ctx.font = 'italic 17px Source Sans 3, Arial'; ctx.fillText('k', W - padR - 10, Y(0) + 36);
+  const mu = n * p, sg = Math.sqrt(n * p * (1 - p));
+  document.getElementById('binfo').textContent = `P(${a} ≤ X ≤ ${b}) = ${fmt(sum)}\nTI-84 Plus: binomcdf(${n}, ${fmt(p, 2)}, ${b}) − binomcdf(${n}, ${fmt(p, 2)}, ${a - 1})\nμ = n · p = ${fmt(mu, 2)},  σ = ${fmt(sg, 2)}`;
+}
+['bn', 'bp', 'ba', 'bb'].forEach((id) => document.getElementById(id).addEventListener('input', drawBin));
+
+// ---------- Aufgaben ----------
+const WORD = 'WEIHNACHTSBAUM';
+const T = [
+  // Etappe 1
+  {day: 1, n: 1, lv: 1, title: 'Der Adventskalender',
+   text: R`Hinter den 24 Türchen eines Adventskalenders stecken 6 Schokoladen-Weihnachtsmänner, 10 Sterne und 8 Glocken. Lina öffnet zufällig ein Türchen. Mit welcher Wahrscheinlichkeit findet sie einen Stern?`,
+   fields: [{id: 'a', label: R`\(P(\text{Stern})=\)`, val: 10 / 24}],
+   hints: [R`Alle Türchen sind gleich wahrscheinlich, also ein Laplace-Experiment.`, R`\( P=\frac{\text{günstige}}{\text{alle}}=\frac{10}{24} \). Kürzen nicht vergessen.`],
+   sol: R`\( P(\text{Stern})=\frac{10}{24}=\frac{5}{12}\approx0{,}4167 \)`},
+  {day: 1, n: 2, lv: 1, title: 'Die Plätzchendose',
+   text: R`In einer Dose liegen 5 Zimtsterne, 3 Vanillekipferl und 2 Lebkuchen. Ohne hinzusehen nimmst du nacheinander zwei Plätzchen heraus (und isst sie natürlich, also <strong>ohne Zurücklegen</strong>). Berechne die Wahrscheinlichkeit, dass a) beide Plätzchen Zimtsterne sind, b) kein Lebkuchen dabei ist.`,
+   fields: [{id: 'a', label: 'a)', val: 2 / 9}, {id: 'b', label: 'b)', val: 28 / 45}],
+   hints: [R`a) Das Baumdiagramm oben hilft: \( \frac{5}{10}\cdot\frac{4}{9} \).`, R`b) Kein Lebkuchen heißt: Beide Plätzchen stammen aus den 8 anderen. \( \frac{8}{10}\cdot\frac{7}{9} \)`],
+   sol: R`a) \( \frac{5}{10}\cdot\frac{4}{9}=\frac{20}{90}=\frac{2}{9}\approx0{,}2222 \)<br>b) \( \frac{8}{10}\cdot\frac{7}{9}=\frac{56}{90}=\frac{28}{45}\approx0{,}6222 \)`},
+  {day: 1, n: 3, lv: 1, title: 'Wackelige Kerzen',
+   text: R`An einem Adventskranz flackert jede der elektrischen Kerzen unabhängig von den anderen mit der Wahrscheinlichkeit 0,1. Berechne die Wahrscheinlichkeit, dass von 3 Kerzen mindestens eine flackert.`,
+   fields: [{id: 'a', label: R`\(P=\)`, val: 0.271}],
+   hints: [R`Das Gegenereignis von „mindestens eine flackert“ ist „keine flackert“.`, R`\( P(\text{keine flackert})=0{,}9^{3} \)`],
+   sol: R`\( P=1-0{,}9^{3}=1-0{,}729=0{,}271 \)`},
+  {day: 1, n: 4, lv: 2, title: 'Die Losbude auf dem Weihnachtsmarkt',
+   text: R`Ein Los kostet 1 €. Mit 2 % Wahrscheinlichkeit gewinnt man einen Teddy im Wert von 20 €, mit 10 % einen Lebkuchen im Wert von 3 €, sonst nichts. Berechne den Erwartungswert des Gewinns (Wert des Preises minus Einsatz) in Euro und entscheide, ob das Spiel fair ist.`,
+   fields: [{id: 'e', label: R`\(E(G)=\)`, val: -0.3, tol: 0.006}],
+   mc: {options: ['Das Spiel ist fair.', 'Das Spiel ist nicht fair, die Spieler verlieren auf Dauer.', 'Das Spiel ist nicht fair, die Losbude verliert auf Dauer.'], right: 1},
+   hints: [R`Der Gewinn nimmt drei Werte an: \( 19 \) €, \( 2 \) € und \( -1 \) €.`, R`\( E(G)=19\cdot0{,}02+2\cdot0{,}1+(-1)\cdot0{,}88 \)`],
+   sol: R`\( E(G)=0{,}38+0{,}2-0{,}88=-0{,}30 \) €. Im Mittel verliert man pro Los 30 Cent, das Spiel ist nicht fair. Die Losbude verdient daran (oft für einen guten Zweck).`},
+  {day: 1, n: 5, lv: 2, title: 'Wie viele Lose für einen Teddy?',
+   text: R`Wie viele Lose aus Aufgabe 4 muss man mindestens kaufen, damit man mit einer Wahrscheinlichkeit von mindestens 50 % mindestens einen Teddy gewinnt?`,
+   fields: [{id: 'n', label: R`\(n=\)`, val: 35, tol: 0.01}],
+   hints: [R`Ansatz: \( 1-0{,}98^{n}\ge0{,}5 \), also \( 0{,}98^{n}\le0{,}5 \).`, R`Logarithmieren oder mit dem TI-84 Plus eine Wertetabelle von \( y=1-0{,}98^{x} \) anlegen. Beim Teilen durch \( \ln 0{,}98<0 \) dreht sich das Ungleichheitszeichen um.`],
+   sol: R`\( n\ge\frac{\ln 0{,}5}{\ln 0{,}98}\approx34{,}3 \). Man muss mindestens 35 Lose kaufen, das kostet 35 €. Der Teddy im Laden wäre billiger.`},
+  // Etappe 2
+  {day: 2, n: 6, lv: 1, title: 'Kinderpunsch und gebrannte Mandeln',
+   text: R`70 % der Besucher eines Weihnachtsmarktes trinken Kinderpunsch (\(K\)). Von ihnen kaufen 40 % auch gebrannte Mandeln (\(M\)), von den übrigen Besuchern nur 20 %. Berechne a) \( P(K\cap M) \), b) \( P(M) \), c) die Wahrscheinlichkeit, dass ein Mandelkäufer auch Kinderpunsch getrunken hat. (Kontrolle mit der Erkundung oben.)`,
+   fields: [{id: 'a', label: R`a)`, val: 0.28}, {id: 'b', label: R`b)`, val: 0.34}, {id: 'c', label: R`c)`, val: 0.28 / 0.34, tol: 0.002}],
+   hints: [R`a) Pfad \(K\), dann \(M\): \( 0{,}7\cdot0{,}4 \). b) Zwei Pfade führen zu \(M\).`, R`c) Gesucht ist \( P_{M}(K)=\frac{P(K\cap M)}{P(M)} \).`],
+   sol: R`a) \( 0{,}7\cdot0{,}4=0{,}28 \)<br>b) \( 0{,}28+0{,}3\cdot0{,}2=0{,}34 \)<br>c) \( P_{M}(K)=\frac{0{,}28}{0{,}34}\approx0{,}8235 \)`},
+  {day: 2, n: 7, lv: 1, title: 'Tannenbaum und Plätzchen',
+   text: R`Im Jahrgang haben 50 von 80 Schülern einen Weihnachtsbaum zu Hause (\(B\)). 30 Schüler backen Plätzchen (\(P\)), davon haben 20 auch einen Weihnachtsbaum. Ein Schüler wird zufällig ausgewählt. Stelle eine Vierfeldertafel auf und berechne a) \( P(B\cap\overline{P}) \), b) \( P_{B}(P) \).`,
+   fields: [{id: 'a', label: R`a)`, val: 0.375}, {id: 'b', label: R`b)`, val: 0.4}],
+   hints: [R`Trage zuerst die absoluten Zahlen ein: 20 haben beides, also haben \( 50-20=30 \) einen Baum, backen aber nicht.`, R`b) Anteil der Plätzchenbäcker <em>unter den</em> Schülern mit Baum: \( \frac{20}{50} \).`],
+   sol: R`Vierfeldertafel (absolut): \(B\cap P\): 20, \(B\cap\overline{P}\): 30, \(\overline{B}\cap P\): 10, \(\overline{B}\cap\overline{P}\): 20.<br>a) \( \frac{30}{80}=0{,}375 \)  b) \( \frac{20}{50}=0{,}4 \)`},
+  {day: 2, n: 8, lv: 1, title: 'Unabhängig?',
+   text: R`Sind die Ereignisse \(B\) und \(P\) aus Aufgabe 7 stochastisch unabhängig?`,
+   mc: {options: [R`Ja, denn \( P_{B}(P)=P(P) \).`, R`Nein, denn \( P_{B}(P)=0{,}4 \), aber \( P(P)=0{,}375 \).`, R`Nein, denn mehr Schüler haben einen Baum, als Plätzchen backen.`], right: 1},
+   hints: [R`Berechne \( P(P)=\frac{30}{80} \) und vergleiche mit \( P_{B}(P) \).`, R`Unabhängig wären die Ereignisse nur bei Gleichheit.`],
+   sol: R`\( P(P)=\frac{30}{80}=0{,}375\neq0{,}4=P_{B}(P) \). Die Ereignisse sind (knapp) abhängig: Unter den Schülern mit Baum wird etwas häufiger gebacken.`},
+  {day: 2, n: 9, lv: 2, title: 'Zerbrochene Christbaumkugeln',
+   text: R`Ein Händler bezieht 60 % seiner Christbaumkugeln von Firma \(A\) und 40 % von Firma \(B\). Bei \(A\) sind 5 % der Kugeln zerbrochen (\(Z\)), bei \(B\) 10 %. Berechne a) die Wahrscheinlichkeit, dass eine zufällig gewählte Kugel zerbrochen ist, b) die Wahrscheinlichkeit, dass eine zerbrochene Kugel von Firma \(A\) stammt.`,
+   fields: [{id: 'a', label: R`a) \(P(Z)=\)`, val: 0.07}, {id: 'b', label: R`b) \(P_{Z}(A)=\)`, val: 3 / 7, tol: 0.002}],
+   hints: [R`a) \( P(Z)=0{,}6\cdot0{,}05+0{,}4\cdot0{,}1 \)`, R`b) \( P_{Z}(A)=\frac{P(A\cap Z)}{P(Z)}=\frac{0{,}03}{P(Z)} \)`],
+   sol: R`a) \( P(Z)=0{,}03+0{,}04=0{,}07 \)<br>b) \( P_{Z}(A)=\frac{0{,}03}{0{,}07}=\frac{3}{7}\approx0{,}4286 \). Obwohl \(A\) mehr liefert, stammt weniger als die Hälfte der zerbrochenen Kugeln von \(A\).`},
+  // Etappe 3
+  {day: 3, n: 10, lv: 1, title: 'Bernoulli oder nicht?',
+   text: R`In welchem Fall ist \(X\) binomialverteilt?`,
+   mc: {options: ['Aus der Plätzchendose (Aufgabe 2) werden 4 Plätzchen ohne Zurücklegen genommen, X zählt die Zimtsterne.', 'Beim Wichteln zieht jeder der 10 Schüler einen Namenszettel aus einem Topf, X zählt, wie viele den eigenen Namen ziehen.', 'Ein Glücksrad mit 30 % Gewinnfeld wird 15-mal gedreht, X zählt die Gewinne.', 'Man dreht so lange am Glücksrad, bis man gewinnt, X zählt die Drehungen.'], right: 2},
+   hints: [R`Prüfe: feste Anzahl \(n\), nur Treffer oder Niete, gleiches \(p\), Unabhängigkeit.`, R`Beim Ziehen ohne Zurücklegen (auch beim Wichteln) ändert sich \(p\) von Zug zu Zug.`],
+   sol: R`Nur beim Glücksrad sind alle Bedingungen erfüllt: \( n=15 \), \( p=0{,}3 \), unabhängige Drehungen. Beim Ziehen ohne Zurücklegen ändert sich \(p\), beim Drehen bis zum Gewinn ist \(n\) nicht fest.`},
+  {day: 3, n: 11, lv: 1, title: 'Die Lichterkette',
+   text: R`Eine Lichterkette hat 20 LEDs. Jede LED ist unabhängig von den anderen mit der Wahrscheinlichkeit 0,05 defekt. Berechne die Wahrscheinlichkeit, dass a) alle LEDs leuchten, b) genau eine LED defekt ist.`,
+   fields: [{id: 'a', label: 'a)', val: 0.3585}, {id: 'b', label: 'b)', val: 0.3774}],
+   hints: [R`\(X\) = Anzahl der defekten LEDs, \( n=20 \), \( p=0{,}05 \). a) \( P(X=0)=0{,}95^{20} \)`, R`b) \( P(X=1)=\binom{20}{1}\cdot0{,}05\cdot0{,}95^{19} \) oder binompdf(20, 0.05, 1)`],
+   sol: R`a) \( 0{,}95^{20}\approx0{,}3585 \)<br>b) \( 20\cdot0{,}05\cdot0{,}95^{19}\approx0{,}3774 \)`},
+  {day: 3, n: 12, lv: 1, title: 'Socken unterm Baum',
+   text: R`Erfahrungsgemäß enthalten 25 % aller Weihnachtsgeschenke Socken. Unter einem großen Familienbaum liegen 40 Geschenke. Berechne Erwartungswert und Standardabweichung der Anzahl der Sockengeschenke.`,
+   fields: [{id: 'mu', label: R`\(\mu=\)`, val: 10}, {id: 'sg', label: R`\(\sigma=\)`, val: Math.sqrt(7.5), tol: 0.01}],
+   hints: [R`\( \mu=n\cdot p=40\cdot0{,}25 \)`, R`\( \sigma=\sqrt{40\cdot0{,}25\cdot0{,}75} \)`],
+   sol: R`\( \mu=10 \), \( \sigma=\sqrt{7{,}5}\approx2{,}74 \)`},
+  {day: 3, n: 13, lv: 2, title: 'Das Glücksrad am Glühweinstand',
+   text: R`Ein Glücksrad hat ein Gewinnfeld mit der Wahrscheinlichkeit 0,3. Es wird 15-mal gedreht. Berechne die Wahrscheinlichkeit für a) höchstens 3 Gewinne, b) mindestens 6 Gewinne, c) mehr als 3, aber weniger als 8 Gewinne. (Kontrolle mit der Erkundung oben.)`,
+   fields: [{id: 'a', label: 'a)', val: 0.2969}, {id: 'b', label: 'b)', val: 0.2784}, {id: 'c', label: 'c)', val: 0.6531}],
+   hints: [R`Nutze die Übersetzungstabelle. b) \( P(X\ge6)=1-P(X\le5) \)`, R`c) „mehr als 3, aber weniger als 8“ heißt \( 4\le X\le7 \), also binomcdf(15, 0.3, 7) − binomcdf(15, 0.3, 3).`],
+   sol: R`a) \( P(X\le3)\approx0{,}2969 \)<br>b) \( 1-P(X\le5)\approx0{,}2784 \)<br>c) \( P(4\le X\le7)\approx0{,}6531 \)`},
+  {day: 3, n: 14, lv: 2, title: 'Zerbrochene Lebkuchen',
+   text: R`In einer Bäckerei sind 4 % der Lebkuchen zerbrochen. Sie werden in Tüten zu je 25 Stück verkauft. a) Berechne die Wahrscheinlichkeit, dass in einer Tüte höchstens ein zerbrochener Lebkuchen ist. b) Frau Kamau kauft drei Tüten. Berechne die Wahrscheinlichkeit, dass in jeder ihrer Tüten höchstens ein zerbrochener Lebkuchen ist.`,
+   fields: [{id: 'a', label: 'a)', val: 0.7358}, {id: 'b', label: 'b)', val: 0.3984, tol: 0.002}],
+   hints: [R`a) \( n=25 \), \( p=0{,}04 \), gesucht ist \( P(X\le1) \).`, R`b) Die drei Tüten sind unabhängig. Jede muss die Bedingung aus a) erfüllen, also Produktregel.`],
+   sol: R`a) \( P(X\le1)\approx0{,}7358 \)<br>b) \( 0{,}7358^{3}\approx0{,}3984 \)`},
+];
+
+let solved = {};
+const KEY = 'wh-mathe12-wk-xmas';
+try { solved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { solved = {}; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(solved)); } catch (e) {} };
+function updateProgress() {
+  const n = T.filter((t) => solved[t.n]).length;
+  document.getElementById('progress').textContent = `${n} von ${T.length} Aufgaben gelöst`;
+  const w = document.getElementById('word');
+  w.innerHTML = [...WORD].map((ch, i) => `<span class="${solved[i + 1] ? 'on' : ''}" title="Aufgabe ${i + 1}">${solved[i + 1] ? ch : i + 1}</span>`).join('');
+  if (n === T.length) document.getElementById('finalText').textContent = 'Alle Aufgaben gelöst, das Lösungswort ist vollständig! Schöne Feiertage und einen guten Start ins neue Jahr. Bring deine Fragen in die erste Mathestunde im Januar mit.';
+}
+
+function render(t) {
+  const el = document.createElement('div'); el.className = 'task' + (solved[t.n] ? ' done' : ''); el.id = 'task' + t.n;
+  let inner = `<div class="task-head"><h3><span class="level" aria-label="${t.lv === 1 ? 'Basis' : 'anspruchsvoller'}">${'★'.repeat(t.lv)}</span>Aufgabe ${t.n}: ${t.title}</h3><span class="badge">${solved[t.n] ? '✓ gelöst' : 'offen'}</span></div><p>${t.text}</p>`;
+  if (t.fields) inner += '<div class="fields">' + t.fields.map((f) => `<label class="field">${f.label} <input id="t${t.n}-${f.id}" inputmode="decimal" autocomplete="off"></label>`).join('') + '</div>';
+  if (t.mc) inner += '<div class="choices">' + t.mc.options.map((o, i) => `<label><input type="radio" name="t${t.n}-mc" value="${i}"> <span>${o}</span></label>`).join('') + '</div>';
+  inner += `<div class="btns"><button class="b primary" data-act="check">Prüfen</button><button class="b" data-act="hint">Tipp</button><button class="b" data-act="sol">Lösung zeigen</button></div>
+    <div class="feedback" hidden></div><div class="hint" hidden></div><div class="solution" hidden><strong>Lösung</strong><p>${t.sol}</p></div>`;
+  el.innerHTML = inner;
+  let hintCount = 0;
+  el.addEventListener('click', (ev) => {
+    const act = ev.target.dataset && ev.target.dataset.act; if (!act) return;
+    const fb = el.querySelector('.feedback'), hint = el.querySelector('.hint'), sol = el.querySelector('.solution');
+    if (act === 'hint') {
+      if (hintCount < t.hints.length) { hint.innerHTML += `<p>Tipp ${hintCount + 1}: ${t.hints[hintCount]}</p>`; hintCount++; hint.hidden = false; typeset(hint); }
+      if (hintCount >= t.hints.length) ev.target.disabled = true;
+    }
+    if (act === 'sol') { sol.hidden = false; typeset(sol); }
+    if (act === 'check') {
+      let ok = true, empty = false;
+      if (t.fields) t.fields.forEach((f) => {
+        const inp = document.getElementById(`t${t.n}-${f.id}`), v = parseNum(inp.value);
+        if (isNaN(v)) { empty = true; inp.className = ''; ok = false; return; }
+        const good = Math.abs(v - f.val) <= (f.tol ?? 0.0015);
+        inp.className = good ? 'right' : 'wrong'; ok = ok && good;
+      });
+      if (t.mc) {
+        const sel = el.querySelector(`input[name="t${t.n}-mc"]:checked`);
+        if (!sel) { empty = true; ok = false; } else ok = ok && parseInt(sel.value) === t.mc.right;
+      }
+      fb.hidden = false;
+      if (empty && !ok) { fb.className = 'feedback no'; fb.textContent = 'Bitte fülle alle Felder aus bzw. wähle eine Antwort.'; }
+      else if (ok) { fb.className = 'feedback ok'; fb.textContent = `Richtig! Dein Buchstabe: ${WORD[t.n - 1]}. Vergleiche deinen Rechenweg noch mit der Lösung.`; solved[t.n] = true; save(); el.classList.add('done'); el.querySelector('.badge').textContent = '✓ gelöst'; updateProgress(); }
+      else { fb.className = 'feedback no'; fb.textContent = 'Noch nicht ganz. Prüfe die rot markierten Felder bzw. deine Auswahl. Ein Tipp hilft dir weiter.'; }
+    }
+  });
+  return el;
+}
+T.forEach((t) => document.getElementById('tasks' + t.day).appendChild(render(t)));
+updateProgress();
+
+// ---------- Reiter ----------
+const tabs = [['tab-d1', 'day1'], ['tab-d2', 'day2'], ['tab-d3', 'day3']];
+function show(i) {
+  tabs.forEach(([t, p], k) => { document.getElementById(t).setAttribute('aria-selected', k === i); document.getElementById(p).hidden = k !== i; });
+  try { localStorage.setItem(KEY + '-tab', i); } catch (e) {}
+  if (i === 1) drawVFT(); if (i === 2) drawBin();
+}
+tabs.forEach(([t], i) => document.getElementById(t).addEventListener('click', () => { show(i); }));
+let start = 0; try { start = parseInt(localStorage.getItem(KEY + '-tab') || '0') || 0; } catch (e) {}
+show(Math.min(Math.max(start, 0), 2)); drawVFT(); drawBin();
+const mq = window.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', () => { drawVFT(); drawBin(); });
+window.addEventListener('load', () => { if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(() => typeset()); });
+</script>
+</body>
+</html>
